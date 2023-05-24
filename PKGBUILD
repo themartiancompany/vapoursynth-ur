@@ -4,7 +4,7 @@
 
 pkgname=vapoursynth
 pkgver=R62
-pkgrel=1
+pkgrel=2
 pkgdesc='A video processing framework with the future in mind'
 arch=(x86_64)
 url=http://www.vapoursynth.com/
@@ -13,14 +13,8 @@ license=(
   custom:OFL
 )
 depends=(
-  libass.so
-  libavcodec.so
-  libavformat.so
-  libavutil.so
-  libmagick
   libzimg.so
   python
-  tesseract
 )
 makedepends=(
   cython
@@ -32,32 +26,23 @@ source=(
   git+https://github.com/vapoursynth/vapoursynth.git#tag=${_tag}
   vapoursynth.xml
 )
-sha256sums=(
-  SKIP
-  8e51579547d20cd7cb9618a47b3ac508423d09d76649bf038d0ab9acb850b068
-)
+b2sums=('SKIP'
+        'feae23a22f8589177f30c36bdf21bab93d55a786194d3e0e958537016630d075b82178f60ac840f30ae316a8f87d3fb01f371211f62d1fee9850ee5063561747')
 
 pkgver() {
   cd vapoursynth
-
   git describe --tags
 }
 
 prepare() {
   cd vapoursynth
-
-  sed -e 's|python-$PYTHON_VERSION|python-$PYTHON_VERSION-embed|' -i configure.ac # Fix linking with python 3.8
   ./autogen.sh
 }
 
 build() {
   cd vapoursynth
-
-  export LDFLAGS="$LDFLAGS -lpthread"
-
   ./configure \
     --prefix=/usr \
-    --enable-imwri \
     --disable-static
   sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
   make
